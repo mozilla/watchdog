@@ -16,7 +16,7 @@ function init() {
 
 function startViz() {
     var force = d3.layout.force()
-    .charge(-60)
+    .charge(-100)
     .nodes(loginData.nodes)
     .links(loginData.links)
     .size([800, 600])
@@ -38,15 +38,25 @@ function startViz() {
     .attr("class", "node")
     .attr("cx", function(d) { return d.x; })
     .attr("cy", function(d) { return d.y; })
-    .attr("r", 5)
+    .attr("r", function(n) { 
+        if (n.group == 1)
+            return 5;
+        return 7;
+    })
     .style("fill", function(d) { return fill(d.group); })
     .call(force.drag);
+
+
+    node.on("mouseover", mouseOver);
     
+    node.on("mouseout", function(e) {
+        $('.infoPopup').hide();
+    });    
     
-    node.append("svg:text").text(function(d) { return "hey"; });
-    
-    node.append("svg:title")
-        .text(function(d) { return d.name; });
+    // node.append("svg:text").text(function(d) { return "hey"; });
+    // 
+    // node.append("svg:title")
+    //     .text(function(d) { return d.name; });
 
     vis.style("opacity", 1e-6)
       .transition()
@@ -62,6 +72,85 @@ function startViz() {
       node.attr("cx", function(d) { return d.x; })
           .attr("cy", function(d) { return d.y; });
     });
-    
+}
 
+function drawPasswordHash(canvas,password) {
+    var hashedPassword = SHA1(password);
+    
+    var ctx = canvas.getContext('2d');
+    clearCanvas(canvas);
+    
+    for (var bandX = 0; bandX < 6; bandX++) {
+        ctx.fillStyle = '#' + hashedPassword.substr(bandX*6,6);
+        ctx.fillRect(canvas.width/6*bandX,0,canvas.width/6,canvas.height);
+    }
+    
+}
+
+function mouseOver(e) {
+    $('.infoPopup').css('left',e.x + 20);
+    $('.infoPopup').css('top',e.y);
+    
+    if (e.group == 0) {
+        $('#obfuscatePassword').html(obfuscatePassword(e.name));
+        // $('#passwordStrength').html(passwordStrength(e.name).score);
+        $('#passwordInfo').show();
+        drawPasswordStrength($('#passwordStrengthCanvas').get()[0],passwordStrength(e.name));
+        drawPasswordHash($('#passwordHashCanvas').get()[0],e.name);
+    }
+    else {
+        $('#siteInfo').html(e.name).show();
+    }
+}
+
+function clearCanvas(canvas) {
+    var canvasCtx = canvas.getContext('2d');
+    canvasCtx.fillStyle="#ffffff";
+    canvasCtx.lineStyle="#ffffff";
+    canvasCtx.fillRect(0,0,canvas.width,canvas.height);
+}
+
+function drawPasswordStrength(canvas,strength) {
+    var ctx = canvas.getContext('2d');
+    clearCanvas(canvas);
+    ctx.lineStyle="#000000";
+    for (var boxX = 0; boxX < strength.max; boxX++) {
+        if (boxX < strength.score)
+            ctx.fillStyle="#ff0000";
+        else
+            ctx.fillStyle="#ffffff";
+        ctx.fillRect(boxX/strength.max*canvas.width,0,canvas.width/strength.max,canvas.height);
+    }
+}
+
+function passwordStrength(password) {
+    var securityRating = 1;
+    // Over 6 characters?
+    if (password.length > 6)
+        securityRating += 1;
+    // Over 10 characters?
+    if (password.length > 10)
+        securityRating += 1;
+    // Mixed case?
+    if (password.toLowerCase() != password)
+        securityRating += 1;
+    // Numeric characters?
+    for (var passwordCharIdx in password) {
+        if (parseFloat(password[passwordCharIdx]) != NaN) {
+            securityRating += 1;
+            break;
+        }
+    }
+    return {
+        score: securityRating,
+        max: 5
+    };
+}
+
+function obfuscatePassword(password) {
+    var obfuscatePassword = password[0];
+    for (var x = 0; x < password.length-2; x++)
+        obfuscatePassword += '*';
+    obfuscatePassword += password[password.length-1];
+    return obfuscatePassword;
 }
