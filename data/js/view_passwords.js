@@ -12,6 +12,13 @@ function init() {
         loginData = logins;
         startViz();
     });
+    
+    $('#interactivePasswordHashInput').keyup(function() {
+        drawPasswordHash($('#interactivePasswordHash').get()[0],this.value);
+        // var node = vis.selectAll("circle.node")
+        // .data(this.value)
+        // .style("color", '#ff0000');
+    });
 }
 
 function startViz() {
@@ -96,7 +103,7 @@ function mouseOver(e) {
         // $('#passwordStrength').html(passwordStrength(e.name).score);
         $('#passwordInfo').show();
         drawPasswordStrength($('#passwordStrengthCanvas').get()[0],passwordStrength(e.name));
-        drawPasswordHash($('#passwordHashCanvas').get()[0],e.name);
+        drawPasswordHash($('#passwordInfoHashCanvas').get()[0],e.name);
     }
     else {
         $('#siteInfo').html(e.name).show();
