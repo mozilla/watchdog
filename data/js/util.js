@@ -1,3 +1,38 @@
+function passwordStrength(password) {
+    var securityRating = 1;
+    // Over 6 characters?
+    if (password.length > 6)
+        securityRating += 1;
+    // Over 10 characters?
+    if (password.length > 10)
+        securityRating += 1;
+    // Mixed case?
+    if (password.toLowerCase() != password)
+        securityRating += 1;
+    // Numeric characters?
+    for (var passwordCharIdx in password) {
+        if (parseFloat(password[passwordCharIdx]) != NaN) {
+            securityRating += 1;
+            break;
+        }
+    }
+    return {
+        score: securityRating,
+        max: 5
+    };
+}
+
+function gradientStringForHash(passwordHash) {
+    var gradientString = "-moz-linear-gradient(left";
+    
+    for (var hashBandX = 0; hashBandX < passwordHash.length/6-1; hashBandX++)
+        gradientString += ", #" + passwordHash.substr(hashBandX*6,6).toUpperCase();
+    
+    gradientString += ')';
+    
+    return gradientString;
+}
+
 /**
 *
 *  Secure Hash Algorithm (SHA1)

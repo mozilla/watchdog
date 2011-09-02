@@ -130,30 +130,6 @@ function drawPasswordStrength(canvas,strength) {
     }
 }
 
-function passwordStrength(password) {
-    var securityRating = 1;
-    // Over 6 characters?
-    if (password.length > 6)
-        securityRating += 1;
-    // Over 10 characters?
-    if (password.length > 10)
-        securityRating += 1;
-    // Mixed case?
-    if (password.toLowerCase() != password)
-        securityRating += 1;
-    // Numeric characters?
-    for (var passwordCharIdx in password) {
-        if (parseFloat(password[passwordCharIdx]) != NaN) {
-            securityRating += 1;
-            break;
-        }
-    }
-    return {
-        score: securityRating,
-        max: 5
-    };
-}
-
 function obfuscatePassword(password) {
     var obfuscatePassword = password[0];
     for (var x = 0; x < password.length-2; x++)
