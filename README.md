@@ -1,5 +1,1 @@
-This is the Privacy Watchdog add-on.  It contains:
-
-* A program (lib/main.js).
-* A few tests.
-* Some meager documentation.
+This is Privacy Watchdog. It's a rapidly changing project that explores the way we use passwords in the web browser, and ways we can possibly be more secure in reusing them.
