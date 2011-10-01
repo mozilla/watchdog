@@ -21,9 +21,13 @@ function attachHashAsYouType(passwordElem) {
             return;
         }
         var passwordHash = SHA1(elem.value);
-        var gradientString = gradientStringForHash(passwordHash);
+        // var gradientString = gradientStringForHash(passwordHash);
         
-        elem.style['backgroundImage'] = gradientString;
+        // elem.style['backgroundImage'] = gradientString;
+        var elemWidth = Math.max(elem.clientWidth,elem.offsetWidth);
+        var elemHeight = Math.max(elem.clientHeight,elem.offsetHeight);
+        elem.style['backgroundImage'] = 'url(' + getDataURLForHash(passwordHash,elemWidth,elemHeight) + ')';
+        // elem.style['backgroundSize'] = '100%';
     }
     
     passwordElem.onkeypress = function() { 
