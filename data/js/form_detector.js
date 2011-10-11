@@ -67,6 +67,7 @@ function attachHashAsYouType(passwordElem) {
             type: 'blur',
             hasFocus: document.activeElement == this,
             host: window.location.host,
+            href: window.location.href,
             password: this.value
         });
         
