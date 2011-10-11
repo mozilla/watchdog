@@ -18,7 +18,6 @@ $(document).ready(function() {
 
             newPasswordDiv.children('.passwordCleartext').html(login);
 
-            newPasswordDiv.children('.passwordHash').css('background-color','');
             newPasswordDiv.children('.passwordHash').css('background-image','url(' + getDataURLForHash(SHA1(login),200,25) + ')');
             
             var justHosts = msg.loginTable[login].map(function(x) { return x.host; });
@@ -36,8 +35,10 @@ $(document).ready(function() {
         });
         
         $('.passwordDiv').mouseout(function() {
-           $(this).children('.passwordHash').stop();
-           $(this).children('.passwordHash').html('');
+            var clearTextPassword = $(this).children('.passwordCleartext').html();
+            $(this).children('.passwordHash').stop();
+            $(this).children('.passwordHash').html('');
+            $(this).children('.passwordHash').css('background-image','url(' + getDataURLForHash(SHA1(clearTextPassword),200,25) + ')');
         });
         
         $('.passwordHash').mouseenter(function() {
@@ -45,7 +46,7 @@ $(document).ready(function() {
             $(passwordHash).animate({
                 opacity: 0.0
             },3000, function() {
-                $(passwordHash).html("(your password here)");
+                $(passwordHash).html($(passwordHash).parent().children('.passwordCleartext').html());
                 // $(passwordHash).html($(passwordHash).parent().children('.passwordCleartext').html());
                 $(passwordHash).css('background-image','');
                 $(passwordHash).css('background-color','#000000');
