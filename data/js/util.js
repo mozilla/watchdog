@@ -43,26 +43,17 @@ function getDataURLForHash(passwordHash,inputWidth,inputHeight) {
     canvas.height = inputHeight;
     canvas.width = inputWidth;
     var context = canvas.getContext('2d');
-    
-    /*var imageData = context.createImageData(inputWidth,inputHeight);
-    
-    const imageSettings = [255,0,0,255,0,255,0,255,0,0,255,255,0,255,255,255];
-    for (var x = 0; x < inputWidth; x++) {
-        var numPixel = parseInt(x/parseFloat(inputWidth)*4);
-        imageData.data[x*4] = imageSettings[numPixel*4];
-        imageData.data[x*4+1] = imageSettings[numPixel*4+1];
-        imageData.data[x*4+2] = imageSettings[numPixel*4+2];
-        imageData.data[x*4+3] = imageSettings[numPixel*4+3];
-    }
-    
-    context.putImageData(imageData,0,0);*/
-
-    // const bandColors = ['#ff0000','#00ff00','#0000ff','#00ffff'];
-    
+            
     for (var hashBandX = 0; hashBandX < 4; hashBandX++) {
         context.fillStyle='#' + passwordHash.substr(hashBandX*4,6);
         context.fillRect(hashBandX/4*inputWidth,0,inputWidth/4,inputHeight);
+        
+        context.fillStyle='#000000';
+        context.fillRect(((hashBandX+1)/4*inputWidth)-1,0,2,inputHeight);
     }
+
+    context.strokeStyle='#000000';
+    context.strokeRect(0,0,inputWidth,inputHeight);
 
     return canvas.toDataURL();
 }
