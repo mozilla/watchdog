@@ -34,7 +34,12 @@ function gradientStringForHash(passwordHash) {
 }
 
 function getDataURLForHash(passwordHash,inputWidth,inputHeight) {
-    var canvas = unsafeWindow.document.createElement('canvas');
+    var win = window;
+    try {
+        win = unsafeWindow;   
+    }
+    catch(e) {}
+    var canvas = win.document.createElement('canvas');
     canvas.height = inputHeight;
     canvas.width = inputWidth;
     var context = canvas.getContext('2d');
