@@ -16,13 +16,18 @@ function automate() {
                 // already waiting until ready event.
                 return;
                 
+            case 'none':
+                doNextScriptStep();
+                return;
+                
             case 'dom_modified':
                 function getDomSubtreeModifiedFunc(selector,ntimes) {
-                    return function() {                    
+                    return function() {
+                        $(selector).unbind('DOMSubtreeModified.watchdogautomator');   
                         if (ntimes == 1) {
-                            console.log('subtree modified!');
+                            console.log('dom tree modified enough times');
                             doNextScriptStep();
-                             $(wait.selector).unbind('DOMSubtreeModified.watchdogautomator');   
+                             $(selector).unbind('DOMSubtreeModified.watchdogautomator');   
                         } 
                         else {
                             $(selector).bind('DOMSubtreeModified.watchdogautomator',getDomSubtreeModifiedFunc(selector,ntimes-1));
@@ -32,47 +37,63 @@ function automate() {
                 
                 $(wait.selector).bind('DOMSubtreeModified.watchdogautomator',getDomSubtreeModifiedFunc(wait.selector,wait.ntimes));
                 
-                // $(wait.selector).bind('DOMSubtreeModified.watchdogautomator', function() {
-                //     console.log('subtree modified!');
-                //     doNextScriptStep();
-                //      $(wait.selector).unbind('DOMSubtreeModified.watchdogautomator');
-                // });
                 break;
         }
     }
     
     function runScript(script) {
+        // console.log("about to run " + script.op + " at time " + (new Date()));
+        
+        if (script.timeout) {
+            console.log('timeout ' + script.timeout);
+            setTimeout(function() {
+                delete script['timeout'];
+                runScript(script);
+            },script.timeout);   
+            return;
+        }
+        
         switch (script.op) {
             case 'debug_alert':
                 alert(script.text);
                 break;
             
             case 'eval':
-                // alert(script.code);
                 eval(script.code);
 
                 break;
                 
             case 'assert_url':
-                if (unsafeWindow.location != eval(script.code))
-                    unsafeWindow.location = eval(script.code);
+                var urlToAssert = "";
+                
+                if (script.urlToAssert)
+                    urlToAssert = script.url;
+                else if (script.code)
+                    urlToAssert = eval(script.code);
+                
+                if (unsafeWindow.location != urlToAssert) {
+                    unsafeWindow.location = urlToAssert;   
+                    console.log ("setting location to  " + urlToAssert);
+                }
+                else {
+                    // FIXME: If the assertion succeeds, we need to manually advance the script step. Should clean this up.
+                    
+                    doNextScriptStep();
+                    return;
+                }
                 
                 break;
 
             case 'simulate_click':                
+                console.log("simulating click on selector: " + script.target + " at " + (new Date()));
                 var targetElems = eval(script.target).get();
                 
                 for (var elem in targetElems) {
-                    console.log("elem to click: " + targetElems[elem]);
-                    
-                    
                     var evt = window.document.createEvent('MouseEvents');
                     evt.initMouseEvent('click', true, true, window.document.defaultView, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
                     targetElems[elem].dispatchEvent(evt);
                 }
                 
-                console.log('simulate_click!');
-
                 break;
 
             case 'return_value':
@@ -87,8 +108,10 @@ function automate() {
             case 'script_finished':
                 
                 self.postMessage({
-                    type: 'scriptFinisheds'
+                    type: 'scriptFinished'
                 });
+                
+                break;
             }
             
         if (script.wait)
@@ -102,8 +125,3 @@ function automate() {
 };
 
 automate();
-
-
-/*$jq("#eduwork").bind("DOMSubtreeModified", function() {
-    alert("tree changed");
-});*/
