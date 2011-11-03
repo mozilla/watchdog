@@ -1,4 +1,7 @@
+function form_detector(){
+var lastBlur = null;
 var inputElements = document.getElementsByTagName('input');
+var inContentWarningVisible = false;
 for (var input in inputElements) {
     if (inputElements[input].type == 'password') {
         attachHashAsYouType(inputElements[input]);
@@ -63,8 +66,10 @@ function attachHashAsYouType(passwordElem) {
     passwordElem.onblur = function() {
         restoreBackgroundColor(this);
         
+        lastBlur = passwordElem;
         self.port.emit('blur',{
             type: 'blur',
+            clientRect: passwordElem.getBoundingClientRect(),
             hasFocus: document.activeElement == this,
             host: window.location.host,
             href: window.location.href,
@@ -88,3 +93,41 @@ function findPos(obj) {
     	    return [curleft,curtop];
         }
 }
+
+self.port.on('inContentWarning',function(msg) {
+    if (lastBlur == null || inContentWarningVisible) return;
+    var pos = findPos(lastBlur);
+    var newDiv = document.createElement('div');
+    inContentWarningVisible = true;
+    newDiv.appendChild(document.createTextNode("Watchdog: "));
+    document.body.insertBefore(newDiv,null);
+    
+    var moreInfo = document.createElement('img');
+    moreInfo.src = msg.warningIconURL;
+    // moreInfo.style['height'] = '50px';
+    newDiv.insertBefore(moreInfo,null);
+    
+    moreInfo.addEventListener('click',function() {
+        self.port.emit('moreInfo', {
+            alertUUIDs: msg.alertUUIDs
+        });
+        document.body.removeChild(newDiv);
+        inContentWarningVisible = false;
+    });
+    
+    newDiv.style['fontFamily'] = "helvetica,sans-serif";
+    newDiv.style['fontSize'] = "120%";
+    newDiv.style['backgroundColor'] = '#ffffff';
+    newDiv.style['position'] = 'absolute';
+    newDiv.style['opacity'] = 0.9;
+    newDiv.style['left'] = pos[0].toString() + 'px';
+    
+    // TODO: CSS transition
+    newDiv.style['top'] = (pos[1] + lastBlur.offsetHeight).toString() + 'px';
+
+    newDiv.style['zIndex'] = 999999;
+    
+});
+};
+
+form_detector();
