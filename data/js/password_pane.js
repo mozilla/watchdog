@@ -25,8 +25,13 @@ $(document).ready(function() {
             var newPasswordDiv = $('#passwordBase').clone();
             newPasswordDiv.removeAttr('id');
             
-            if ((msg.url.substr(0,8) == 'https://') != httpsOnly)
+            if ((msg.url.substr(0,8) == 'https://') != httpsOnly) {
                 newPasswordDiv.addClass('notRecommended');
+                
+                var httpsOnlyWarning = $('<div>HTTPS only.</div>');
+                httpsOnlyWarning.addClass('httpsOnly');
+                newPasswordDiv.append(httpsOnlyWarning);
+            }
 
             newPasswordDiv.children('.passwordCleartext').html(loginList[login].password);
 
