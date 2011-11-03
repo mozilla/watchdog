@@ -1,3 +1,5 @@
+// FIXME: When a user dismisses a doorhanger event, remove in content warning.
+
 function form_detector(){
 var lastBlur = null;
 var inputElements = document.getElementsByTagName('input');
@@ -107,12 +109,16 @@ self.port.on('inContentWarning',function(msg) {
     // moreInfo.style['height'] = '50px';
     newDiv.insertBefore(moreInfo,null);
     
+    function hideInContentWarning() {
+        document.body.removeChild(newDiv);
+        inContentWarningVisible = false;
+    }
+    
     moreInfo.addEventListener('click',function() {
         self.port.emit('moreInfo', {
             alertUUIDs: msg.alertUUIDs
         });
-        document.body.removeChild(newDiv);
-        inContentWarningVisible = false;
+        hideInContentWarning();
     });
     
     newDiv.style['fontFamily'] = "helvetica,sans-serif";
