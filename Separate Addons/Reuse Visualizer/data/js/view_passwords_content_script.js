@@ -1,0 +1,1 @@
+/Users/paulsawaya/Projects/Privacy Watchdog/data/js/view_passwords_content_script.js
