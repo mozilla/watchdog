@@ -1,3 +1,16 @@
+// Thanks, http://www.quirksmode.org/js/findpos.html
+function findPos(obj) {
+	var curleft = curtop = 0;
+		if (obj.offsetParent) {
+		    do {
+        			curleft += obj.offsetLeft;
+        			curtop += obj.offsetTop;
+        		} while (obj = obj.offsetParent);
+    	    return [curleft,curtop];
+        }
+}
+
+
 function passwordStrength(password) {
     var securityRating = 1;
     // Over 6 characters?
