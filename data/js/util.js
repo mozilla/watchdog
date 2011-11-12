@@ -58,7 +58,7 @@ function getDataURLForHash(passwordHash,inputWidth,inputHeight) {
     var context = canvas.getContext('2d');
             
     for (var hashBandX = 0; hashBandX < 4; hashBandX++) {
-        context.fillStyle='#' + passwordHash.substr(hashBandX*4,6);
+        context.fillStyle='#' + passwordHash.substr(hashBandX*6,6);
         context.fillRect(hashBandX/4*inputWidth,0,inputWidth/4,inputHeight);
         
         context.fillStyle='#000000';
