@@ -67,7 +67,6 @@ function getDataURLForHash(passwordHash,inputWidth,inputHeight) {
     }
 
     for (var hashBandX = 0; hashBandX < 4; hashBandX++) {
-        console.log("Color " + hashBandX + " : " + '#' + passwordHash.substr(hashBandX*6,6));
         context.fillStyle='#' + passwordHash.substr(hashBandX*6,6);
         context.fillRect(hashBandX/4*inputWidth,0,inputWidth/4,inputHeight);
         
