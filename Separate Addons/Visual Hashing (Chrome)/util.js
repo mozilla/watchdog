@@ -46,6 +46,18 @@ function gradientStringForHash(passwordHash) {
     return gradientString;
 }
 
+function randomizeHash(passwordHash) {
+    // Add a little bit of randomness to each byte
+    for (var byteIdx = 0; byteIdx < passwordHash.length/2; byteIdx++) {
+        var byte = parseInt(passwordHash.substr(byteIdx*2,2),16);
+        // +/- 3, within 0-255
+        byte = Math.min(Math.max(byte + parseInt(Math.random()*6)-3,0),255);
+        var hexStr = byte.toString(16).length == 2 ? byte.toString(16) : '0' + byte.toString(16);
+        passwordHash = passwordHash.substr(0,byteIdx*2) + hexStr + passwordHash.substr(byteIdx*2+2);
+    }
+    return passwordHash;
+}
+
 function getDataURLForHash(passwordHash,inputWidth,inputHeight) {
     var win = window;
     try {
@@ -57,14 +69,7 @@ function getDataURLForHash(passwordHash,inputWidth,inputHeight) {
     canvas.width = inputWidth;
     var context = canvas.getContext('2d');
     
-    // Add a little bit of randomness to each byte
-    for (var byteIdx = 0; byteIdx < passwordHash.length/2; byteIdx++) {
-        var byte = parseInt(passwordHash.substr(byteIdx*2,2),16);
-        // +/- 3, within 0-255
-        byte = Math.min(Math.max(byte + parseInt(Math.random()*6)-3,0),255);
-        var hexStr = byte.toString(16).length == 2 ? byte.toString(16) : '0' + byte.toString(16);
-        passwordHash = passwordHash.substr(0,byteIdx*2) + hexStr + passwordHash.substr(byteIdx*2+2);
-    }
+    passwordHash = randomizeHash(passwordHash);
 
     for (var hashBandX = 0; hashBandX < 4; hashBandX++) {
         context.fillStyle='#' + passwordHash.substr(hashBandX*6,6);
