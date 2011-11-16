@@ -33,7 +33,7 @@ function visualHash() {
         }
         
         // TODO: find if there's another way of keeping track of typed updates.
-        passwordElem.onkeypress = function() { 
+        passwordElem.onkeydown = function() { 
             setTimeout(function() {
                 updateVisualHash(passwordElem)
             },10);
@@ -44,11 +44,12 @@ function visualHash() {
         var oldFocus = passwordElem.onfocus;
         passwordElem.onfocus = function() {
 
-            self.port.emit('focus',{
-                type: 'focus',
-                pos: findPos(this),
-                password: this.value
-            });
+            if (self.port)
+                self.port.emit('focus',{
+                    type: 'focus',
+                    pos: findPos(this),
+                    password: this.value
+                });
 
             if (oldFocus)
                 oldFocus.apply(this,arguments);
@@ -59,14 +60,15 @@ function visualHash() {
             restoreBackgroundColor(this);
 
             window.lastBlur = passwordElem;
-            self.port.emit('blur',{
-                type: 'blur',
-                clientRect: passwordElem.getBoundingClientRect(),
-                hasFocus: document.activeElement == this,
-                host: window.location.host,
-                href: window.location.href,
-                password: this.value
-            });
+            if (self.port)
+                self.port.emit('blur',{
+                    type: 'blur',
+                    clientRect: passwordElem.getBoundingClientRect(),
+                    hasFocus: document.activeElement == this,
+                    host: window.location.host,
+                    href: window.location.href,
+                    password: this.value
+                });
 
             if (oldBlur)
                 oldBlur.apply(this,arguments);
