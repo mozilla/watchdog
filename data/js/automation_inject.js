@@ -1,3 +1,5 @@
+// TODO: Put this file out of its misery.
+
 function automate() {
 
     function doNextScriptStep() {
@@ -41,9 +43,7 @@ function automate() {
         }
     }
     
-    function runScript(script) {
-        // console.log("about to run " + script.op + " at time " + (new Date()));
-        
+    function runScript(script) {        
         if (script.timeout) {
             console.log('timeout ' + script.timeout);
             setTimeout(function() {
